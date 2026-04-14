@@ -1,0 +1,37 @@
+{
+  "name": "embracon-comunicacao-api",
+  "version": "2.0.0",
+  "main": "index.refatorado.js",
+  "scripts": {
+    "start": "node index.refatorado.js",
+    "dev": "nodemon index.refatorado.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix"
+  },
+  "keywords": ["api", "comunicacao", "embracon"],
+  "author": "",
+  "license": "ISC",
+  "description": "API refatorada com segurança e boas práticas",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.100.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "dompurify": "^3.0.6",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "jsdom": "^23.0.1",
+    "morgan": "^1.10.0",
+    "multer": "^2.1.1",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
+  }
+}
