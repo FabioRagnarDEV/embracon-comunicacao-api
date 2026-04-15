@@ -37,3 +37,6 @@ build/
 # Temporários
 tmp/
 temp/
+
+# Render
+.render/

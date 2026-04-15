@@ -1,31 +1,47 @@
 const { body, param, validationResult } = require('express-validator');
 
 /**
+ * Extrai texto puro de HTML (para validar tamanho real do conteúdo)
+ */
+const extrairTexto = (html) => {
+    if (!html) return '';
+    return html.replace(/<[^>]*>/g, '').trim();
+};
+
+/**
  * Validação para criação/atualização de comunicado
  */
 const validarComunicado = [
     body('titulo')
         .trim()
         .notEmpty().withMessage('Título é obrigatório')
-        .isLength({ min: 5, max: 200 }).withMessage('Título deve ter entre 5 e 200 caracteres')
-        .escape(),
+        .isLength({ min: 3, max: 200 }).withMessage('Título deve ter entre 3 e 200 caracteres'),
+        // Sem .escape() — a sanitização do HTML é feita pelo DOMPurify no service
     
     body('conteudo')
-        .trim()
         .notEmpty().withMessage('Conteúdo é obrigatório')
-        .isLength({ min: 10, max: 50000 }).withMessage('Conteúdo deve ter entre 10 e 50000 caracteres'),
+        .custom((value) => {
+            const textoLimpo = extrairTexto(value);
+            if (textoLimpo.length < 3) {
+                throw new Error('Conteúdo não pode estar vazio');
+            }
+            if (value.length > 10000000) { // 10MB de HTML (suporta imagens base64)
+                throw new Error('Conteúdo excede o limite máximo permitido');
+            }
+            return true;
+        }),
     
     body('tags')
         .trim()
         .notEmpty().withMessage('Tags são obrigatórias')
-        .isLength({ max: 100 }).withMessage('Tags devem ter no máximo 100 caracteres')
-        .escape(),
+        .isLength({ max: 200 }).withMessage('Tags devem ter no máximo 200 caracteres'),
+        // Sem .escape() — sanitizado no service
 
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ 
-                erro: 'Dados inválidos', 
+                erro: errors.array()[0].msg,
                 detalhes: errors.array() 
             });
         }
@@ -38,13 +54,13 @@ const validarComunicado = [
  */
 const validarCurtida = [
     param('id')
-        .isUUID().withMessage('ID do comunicado inválido'),
+        .notEmpty().withMessage('ID do comunicado é obrigatório'),
 
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ 
-                erro: 'Dados inválidos', 
+                erro: errors.array()[0].msg,
                 detalhes: errors.array() 
             });
         }

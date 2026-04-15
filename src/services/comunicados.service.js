@@ -12,6 +12,8 @@ class ComunicadosService {
             .from('comunicados_oficiais')
             .select(`
                 *,
+                autor:usuarios!comunicados_oficiais_autor_id_fkey ( id, nome_completo, email ),
+                modificado_por_usuario:usuarios!comunicados_oficiais_modificado_por_fkey ( id, nome_completo, email ),
                 anexos_comunicados (
                     id,
                     nome_arquivo,
@@ -64,7 +66,7 @@ class ComunicadosService {
     /**
      * Atualizar comunicado existente
      */
-    async atualizar(id, { titulo, conteudo, tags, arquivos }) {
+    async atualizar(id, { titulo, conteudo, tags, arquivos, modificado_por }) {
         const conteudoLimpo = sanitizarHTML(conteudo);
 
         const { error: updateError } = await supabaseAdmin
@@ -73,7 +75,8 @@ class ComunicadosService {
                 titulo: titulo.trim(), 
                 conteudo: conteudoLimpo, 
                 tags: tags.trim(), 
-                atualizado_em: new Date() 
+                atualizado_em: new Date(),
+                modificado_por: modificado_por || null
             })
             .eq('id', id);
 

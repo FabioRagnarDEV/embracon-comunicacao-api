@@ -66,7 +66,8 @@ class ComunicadosController {
                 titulo,
                 conteudo,
                 tags,
-                arquivos
+                arquivos,
+                modificado_por: req.usuario.id
             });
 
             logger.info(`Comunicado atualizado: ${id} por ${req.usuario.id}`);
